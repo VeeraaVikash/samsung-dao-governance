@@ -78,7 +78,7 @@ export default function AlertsPage() {
           <h2 className="text-xl heading">Anomaly Alerts</h2>
           <p className="text-xs text-gray-400">{alerts.filter(a => !a.resolved).length} active alerts</p>
         </div>
-        <div className="flex gap-1 bg-gray-100 rounded-lg p-0.5">
+        <div className="flex flex-wrap gap-1 bg-gray-100 rounded-lg p-0.5">
           {(["all", "active", "resolved"] as const).map(f => (
             <button key={f} onClick={() => setFilter(f)}
               className={`px-3 py-1.5 rounded-md text-xs font-medium capitalize transition-colors ${filter === f ? "bg-white text-gray-700 shadow-sm" : "text-gray-400"}`}>{f}</button>
@@ -105,7 +105,7 @@ export default function AlertsPage() {
                     <span>Source: <span className="font-mono text-gray-500">{alert.source}</span></span>
                   </div>
                 </div>
-                <div className="flex gap-2 shrink-0">
+                <div className="flex flex-col sm:flex-row gap-2 shrink-0">
                   <button onClick={() => setSelectedAlert(alert)} className="btn-secondary text-xs px-3 py-1">View details</button>
                   {!alert.resolved && <button onClick={() => resolve(alert.id)} className="text-xs px-3 py-1 rounded-lg bg-success-light text-success font-medium">Resolve</button>}
                 </div>

@@ -100,7 +100,7 @@ export default function AnalyticsPage() {
       {metricGroups.map(group => (
         <div key={group.title} className="card p-5 mb-4">
           <h3 className="text-sm heading mb-3">{group.title}</h3>
-          <div className="grid grid-cols-5 gap-3">
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
             {group.metrics.map(m => (
               <div key={m.label} className="text-center p-3 bg-gray-50 rounded-lg">
                 <div className="text-xl font-bold text-gray-900">{m.value}</div>

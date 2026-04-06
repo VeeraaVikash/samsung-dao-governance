@@ -45,7 +45,7 @@ export default function GiveawayPage() {
         <div className="card text-center py-12"><p className="text-sm text-gray-400">No active giveaways.</p></div>
       ) : events.map(ev => (
         <div key={ev.id} className="card p-5 mb-4">
-          <div className="flex justify-between items-start">
+          <div className="flex flex-col sm:flex-row justify-between items-start gap-3">
             <div>
               <span className="eyebrow">GIVEAWAY</span>
               <h3 className="text-base heading mt-1">{ev.title}</h3>

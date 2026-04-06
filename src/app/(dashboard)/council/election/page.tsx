@@ -53,7 +53,7 @@ export default function ElectionSetupPage() {
       {showCreate && (
         <div className="card p-5 mb-5 border-[1.5px] border-samsung-primary">
           <h3 className="text-sm heading mb-3">New Election</h3>
-          <div className="grid grid-cols-2 gap-3 mb-3">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mb-3">
             <div><label className="text-xs font-medium text-gray-500 mb-1 block">Title</label>
               <input value={title} onChange={e => setTitle(e.target.value)} placeholder="e.g. Council Election — Q3 2025" className="w-full px-3 py-2.5 rounded-lg border-thin border-gray-300 text-[13px] text-gray-700 outline-none focus:border-samsung-primary" /></div>
             <div><label className="text-xs font-medium text-gray-500 mb-1 block">Type</label>
@@ -64,7 +64,7 @@ export default function ElectionSetupPage() {
             <div><label className="text-xs font-medium text-gray-500 mb-1 block">End</label>
               <input type="datetime-local" value={endDate} onChange={e => setEndDate(e.target.value)} className="w-full px-3 py-2.5 rounded-lg border-thin border-gray-300 text-[13px] font-mono text-gray-700 outline-none" /></div>
           </div>
-          <div className="flex gap-6 mb-4 text-xs">
+          <div className="flex flex-wrap gap-4 sm:gap-6 mb-4 text-xs">
             <label className="flex items-center gap-2 cursor-pointer"><input type="checkbox" checked={requireRep} onChange={e => setRequireRep(e.target.checked)} className="accent-samsung-primary" /><span className="text-gray-600">Require reputation</span></label>
             <label className="flex items-center gap-2 cursor-pointer"><input type="checkbox" checked={allowDelegation} onChange={e => setAllowDelegation(e.target.checked)} className="accent-samsung-primary" /><span className="text-gray-600">Allow delegation</span></label>
             <label className="flex items-center gap-2 cursor-pointer"><input type="checkbox" checked={snapshot} onChange={e => setSnapshot(e.target.checked)} className="accent-samsung-primary" /><span className="text-gray-600">Snapshot eligibility</span></label>
@@ -81,7 +81,7 @@ export default function ElectionSetupPage() {
           <button onClick={handleCreate} disabled={creating} className="btn-primary text-sm w-full">{creating ? "Creating..." : "Create election"}</button>
         </div>)}
       {elections.map(el => (
-        <div key={el.id} className="card p-4 mb-3"><div className="flex justify-between items-start"><div>
+        <div key={el.id} className="card p-4 mb-3"><div className="flex flex-col sm:flex-row justify-between items-start gap-3"><div>
           <div className="flex items-center gap-2 mb-1"><StatusBadge status={el.status.toLowerCase()} /><span className="text-sm font-semibold text-gray-900">{el.title}</span></div>
           <div className="text-[11px] text-gray-400">{new Date(el.startDate).toLocaleDateString()} — {new Date(el.endDate).toLocaleDateString()} · {el.candidates?.length || 0} candidates · {el.eligibleMemberCount} eligible</div>
         </div><span className="font-mono text-xs text-gray-400">{(el.electionType || "").replace(/_/g, " ").toLowerCase()}</span></div></div>))}

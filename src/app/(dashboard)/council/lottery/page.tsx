@@ -35,7 +35,7 @@ export default function LotteryConfigPage() {
       <p className="text-xs text-gray-400 mb-5">Create and manage lottery events</p>
       <div className="card p-5 mb-5">
         <h3 className="text-sm heading mb-3">Create Lottery</h3>
-        <div className="grid grid-cols-2 gap-3 mb-3">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mb-3">
           <div><label className="text-xs font-medium text-gray-500 mb-1 block">Title</label>
             <input value={title} onChange={e => setTitle(e.target.value)} placeholder="e.g. Q3 SPU Lottery" className="w-full px-3 py-2.5 rounded-lg border-thin border-gray-300 text-[13px] text-gray-700 outline-none focus:border-samsung-primary" /></div>
           <div><label className="text-xs font-medium text-gray-500 mb-1 block">Prize</label>

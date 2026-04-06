@@ -33,7 +33,7 @@ export default function VotingConfigPage() {
       <h2 className="text-xl heading mb-1">Voting Configuration</h2>
       <p className="text-xs text-gray-400 mb-5">Configure voting parameters for the current governance period</p>
       <div className="card p-5 mb-5">
-        <div className="grid grid-cols-3 gap-4 mb-4">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-4">
           <div><label className="text-xs font-medium text-gray-500 mb-1 block">Voting window (hours)</label>
             <input type="number" value={votingWindow} onChange={e => setVotingWindow(Number(e.target.value))} min={1} max={720}
               className="w-full px-3 py-2.5 rounded-lg border-thin border-gray-300 text-[13px] font-mono text-gray-700 outline-none focus:border-samsung-primary" /></div>

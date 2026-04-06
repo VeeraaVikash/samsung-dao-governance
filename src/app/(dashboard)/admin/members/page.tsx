@@ -35,8 +35,8 @@ export default function MembersPage() {
       <h2 className="text-xl heading mb-1">Member Registry</h2>
       <p className="text-xs text-gray-400 mb-5">{users.length} registered members</p>
 
-      <div className="card overflow-hidden">
-        <table className="w-full text-left">
+      <div className="card overflow-x-auto">
+        <div className="overflow-x-auto"><table className="w-full text-left min-w-[600px]">
           <thead>
             <tr className="border-b border-thin border-gray-200 bg-gray-50">
               <th className="eyebrow px-4 py-2.5">Employee ID</th>
@@ -65,8 +65,6 @@ export default function MembersPage() {
               </tr>
             ))}
           </tbody>
-        </table>
-      </div>
-    </DashboardLayout>
+        </table></div></div></DashboardLayout>
   );
 }

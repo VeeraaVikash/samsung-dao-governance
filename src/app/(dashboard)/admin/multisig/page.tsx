@@ -53,7 +53,7 @@ export default function MultisigPage() {
       {/* Council Members */}
       <div className="card p-5 mb-5">
         <h3 className="text-sm heading mb-3">Council Members ({councilMembers.length})</h3>
-        <div className="grid grid-cols-5 gap-3">
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
           {councilMembers.map(m => (
             <div key={m.id} className="text-center p-3 rounded-xl bg-gray-50 border-thin border-gray-200">
               <div className="w-10 h-10 rounded-full bg-samsung-light mx-auto mb-2 flex items-center justify-center text-sm font-bold text-samsung-primary">

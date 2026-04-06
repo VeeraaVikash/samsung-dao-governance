@@ -37,7 +37,7 @@ export default function AdminProposalsPage() {
       <p className="text-xs text-gray-400 mb-5">{proposals.length} total proposals across all stages</p>
 
       {/* Pipeline overview */}
-      <div className="flex gap-2 mb-5">
+      <div className="flex flex-wrap gap-2 mb-5">
         <button onClick={() => setFilter("all")}
           className={`px-3 py-2 rounded-lg text-xs font-medium transition-colors ${filter === "all" ? "bg-samsung-primary text-white" : "bg-white border-thin border-gray-200 text-gray-500"}`}>
           All ({proposals.length})

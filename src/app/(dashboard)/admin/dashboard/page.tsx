@@ -91,7 +91,7 @@ export default function AdminDashboard() {
       </div>
 
       {/* Stats */}
-      <div className="grid grid-cols-4 gap-3 mb-4">
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-4">
         <StatCard label="Total members" value={stats.total.toLocaleString()} delta="+23 this month" />
         <StatCard label="Active proposals" value={proposals.length || 7} delta={`${proposals.filter((p) => p.status === "PENDING").length || 4} pending review`} />
         <StatCard label="Alerts today" value="2" delta="1 critical" warn />
@@ -107,7 +107,7 @@ export default function AdminDashboard() {
       </div>
 
       {/* Pipeline + Logs */}
-      <div className="grid grid-cols-2 gap-4 mb-5">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-5">
         <div className="card">
           <h4 className="text-sm heading mb-3">Proposal Pipeline</h4>
           {pipelineData.map((d) => (
@@ -137,7 +137,7 @@ export default function AdminDashboard() {
       </div>
 
       {/* Registry + Multisig */}
-      <div className="grid grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div className="card">
           <h4 className="text-sm heading mb-3">Member Registry</h4>
           {[
@@ -168,7 +168,7 @@ export default function AdminDashboard() {
 
         <div className="card">
           <h4 className="text-sm heading mb-3">Multisig Council Status</h4>
-          <div className="flex gap-1.5 mb-3">
+          <div className="grid grid-cols-3 sm:grid-cols-5 gap-1.5 mb-3">
             {multisigMembers.map((m) => (
               <div
                 key={m.name}

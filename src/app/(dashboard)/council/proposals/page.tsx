@@ -47,8 +47,7 @@ export default function CouncilProposalsPage() {
       <h2 className="text-xl heading mb-1">Proposal Review</h2>
       <p className="text-xs text-gray-400 mb-5">Review and approve submitted proposals</p>
 
-      <div className="flex gap-4">
-        <div className="flex-1">
+      <div className="flex flex-col lg:flex-row gap-4"><div className="flex-1">
           {proposals.map(p => (
             <div
               key={p.id}
@@ -70,7 +69,7 @@ export default function CouncilProposalsPage() {
         </div>
 
         {selected && (
-          <div className="w-[340px] card p-5 sticky top-[100px] self-start">
+          <div className="w-full lg:w-[340px] card p-5 sticky top-[100px] self-start">
             <div className="flex items-center gap-2 mb-2">
               <span className="font-mono text-[11px] text-gray-400">P-{selected.number}</span>
               <StatusBadge status={selected.status.toLowerCase()} />

@@ -67,7 +67,7 @@ export default function AuditTrailPage() {
           className="w-full px-3 py-2.5 rounded-lg border-thin border-gray-300 text-[13px] text-gray-700 outline-none focus:border-samsung-primary" />
       </div>
 
-      <div className="card overflow-hidden">
+      <div className="card overflow-x-auto">
         <div className="flex gap-2 px-4 py-2.5 bg-gray-50 border-b border-thin border-gray-200 font-mono">
           <span className="eyebrow min-w-[140px]">Timestamp</span>
           <span className="eyebrow min-w-[140px]">Contract</span>

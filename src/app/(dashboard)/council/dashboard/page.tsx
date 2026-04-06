@@ -111,7 +111,7 @@ export default function CouncilDashboard() {
       {showNewRule && (
         <div className="card p-5 mb-5 border-[1.5px] border-samsung-primary">
           <h3 className="text-sm heading mb-3">Add New Governance Rule</h3>
-          <div className="grid grid-cols-2 gap-3 mb-3">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mb-3">
             <div>
               <label className="text-xs font-medium text-gray-500 mb-1 block">Rule name</label>
               <input value={newRuleName} onChange={e => setNewRuleName(e.target.value)}
@@ -133,14 +133,14 @@ export default function CouncilDashboard() {
         </div>
       )}
 
-      <div className="grid grid-cols-4 gap-3 mb-5">
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-5">
         <StatCard label="Active rules" value={rulesList.length + 7} delta="+2 this period" />
         <StatCard label="Pending proposals" value={proposals.filter(p => p.status === "PENDING").length} delta="Needs review" />
         <StatCard label="Eligible members" value="847" delta="Snapshot taken" />
         <StatCard label="Timelock" value="48h" delta="Mandatory" />
       </div>
 
-      <div className="grid grid-cols-2 gap-4 mb-5">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-5">
         <div className="card">
           <h4 className="text-sm heading mb-3">Active Governance Rules</h4>
           {rulesList.map(([k, v], i) => (
@@ -181,7 +181,7 @@ export default function CouncilDashboard() {
         {/* Election Tab */}
         {configTab === "election" && (
           <div>
-            <div className="grid grid-cols-2 gap-3 mb-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mb-4">
               <div>
                 <label className="text-xs font-medium text-gray-500 mb-1 block">Election name</label>
                 <input value={electionName} onChange={e => { setElectionName(e.target.value); markUnsaved(); }}
@@ -214,7 +214,7 @@ export default function CouncilDashboard() {
         {/* Voting Tab */}
         {configTab === "voting" && (
           <div>
-            <div className="grid grid-cols-2 gap-3 mb-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mb-4">
               <div>
                 <label className="text-xs font-medium text-gray-500 mb-1 block">Voting window (hours)</label>
                 <input type="number" value={votingWindow} onChange={e => { setVotingWindow(Number(e.target.value)); markUnsaved(); }}
@@ -234,7 +234,7 @@ export default function CouncilDashboard() {
         {/* Giveaway Tab */}
         {configTab === "giveaway" && (
           <div>
-            <div className="grid grid-cols-2 gap-3 mb-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mb-4">
               <div>
                 <label className="text-xs font-medium text-gray-500 mb-1 block">Giveaway title</label>
                 <input value={giveawayTitle} onChange={e => { setGiveawayTitle(e.target.value); markUnsaved(); }}
@@ -259,7 +259,7 @@ export default function CouncilDashboard() {
         {/* Lottery Tab */}
         {configTab === "lottery" && (
           <div>
-            <div className="grid grid-cols-2 gap-3 mb-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mb-4">
               <div>
                 <label className="text-xs font-medium text-gray-500 mb-1 block">Lottery title</label>
                 <input value={lotteryTitle} onChange={e => { setLotteryTitle(e.target.value); markUnsaved(); }}
@@ -283,7 +283,7 @@ export default function CouncilDashboard() {
       </div>
 
       {/* Save Bar */}
-      <div className="sticky bottom-0 bg-white border-t border-thin border-gray-200 px-5 py-3 flex justify-between items-center rounded-b-xl">
+      <div className="sticky bottom-0 bg-white border-t border-thin border-gray-200 px-4 sm:px-5 py-3 flex flex-col sm:flex-row justify-between items-center gap-2 rounded-b-xl">
         <span className="text-xs text-gray-400">
           {saveMsg ? <span className="text-success font-medium">{saveMsg}</span>
            : saved ? "All changes saved" : "Unsaved changes in config"}
