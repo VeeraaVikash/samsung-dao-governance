@@ -3,8 +3,9 @@ import { NextRequest, NextResponse } from "next/server";
 import { getSession } from "@/lib/auth";
 import { db } from "@/lib/db";
 
-// GET /api/delegations — List current user's delegations
 export const dynamic = "force-dynamic";
+
+// GET /api/delegations — List current user's delegations
 
 export async function GET() {
   const user = await getSession();
@@ -46,8 +47,6 @@ export async function GET() {
 }
 
 // POST /api/delegations — Create a delegation
-export const dynamic = "force-dynamic";
-
 export async function POST(req: NextRequest) {
   const user = await getSession();
   if (!user?.id) {
@@ -106,8 +105,6 @@ export async function POST(req: NextRequest) {
 }
 
 // DELETE /api/delegations — Revoke a delegation
-export const dynamic = "force-dynamic";
-
 export async function DELETE(req: NextRequest) {
   const user = await getSession();
   if (!user?.id) {
@@ -134,4 +131,3 @@ export async function DELETE(req: NextRequest) {
 
   return NextResponse.json({ success: true });
 }
-

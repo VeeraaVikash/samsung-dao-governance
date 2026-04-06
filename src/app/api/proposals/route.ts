@@ -4,8 +4,9 @@ import { getSession } from "@/lib/auth";
 import { db } from "@/lib/db";
 import { z } from "zod";
 
-// GET /api/proposals
 export const dynamic = "force-dynamic";
+
+// GET /api/proposals
 
 export async function GET() {
   const proposals = await db.proposal.findMany({
@@ -23,8 +24,6 @@ const createSchema = z.object({
 });
 
 // POST /api/proposals — Create proposal (Proposer only)
-export const dynamic = "force-dynamic";
-
 export async function POST(req: NextRequest) {
   const user = await getSession();
   if (!user?.id) {
@@ -71,8 +70,6 @@ export async function POST(req: NextRequest) {
 }
 
 // PATCH /api/proposals — Update status (Council only)
-export const dynamic = "force-dynamic";
-
 export async function PATCH(req: NextRequest) {
   const user = await getSession();
   if (!user?.id || user.role !== "COUNCIL") {
@@ -92,4 +89,3 @@ export async function PATCH(req: NextRequest) {
 
   return NextResponse.json(proposal);
 }
-

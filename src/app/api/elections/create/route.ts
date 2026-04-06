@@ -4,6 +4,8 @@ import { getSession } from "@/lib/auth";
 import { db } from "@/lib/db";
 import { z } from "zod";
 
+export const dynamic = "force-dynamic";
+
 const createElectionSchema = z.object({
   title: z.string().min(3).max(200),
   electionType: z.enum(["SINGLE_CHOICE", "MULTI_CHOICE", "RANKED"]),
@@ -17,9 +19,6 @@ const createElectionSchema = z.object({
     department: z.string().min(2),
   })).min(2, "At least 2 candidates required"),
 });
-
-export const dynamic = "force-dynamic";
-
 export async function POST(req: NextRequest) {
   const user = await getSession();
   if (!user?.id || user.role !== "COUNCIL") {
@@ -68,4 +67,3 @@ export async function POST(req: NextRequest) {
 
   return NextResponse.json(election, { status: 201 });
 }
-

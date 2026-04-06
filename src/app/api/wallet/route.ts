@@ -4,13 +4,14 @@ import { db } from "@/lib/db";
 import { bindWallet } from "@/lib/hedera";
 import { z } from "zod";
 
+export const dynamic = "force-dynamic";
+
 const bindSchema = z.object({
   accountId: z.string().regex(/^\d+\.\d+\.\d+$/, "Invalid Hedera account ID format"),
   provider: z.enum(["hashpack", "walletconnect", "blade"]),
 });
 
 // POST /api/wallet — Bind Hedera wallet to current user
-export const dynamic = "force-dynamic";
 
 export async function POST(req: NextRequest) {
   const currentUser = await getSession();
@@ -79,8 +80,6 @@ export async function POST(req: NextRequest) {
 }
 
 // GET /api/wallet — Get current user's wallet status
-export const dynamic = "force-dynamic";
-
 export async function GET() {
   const currentUser = await getSession();
   if (!currentUser?.id) {
@@ -97,4 +96,3 @@ export async function GET() {
 
   return NextResponse.json(walletInfo);
 }
-

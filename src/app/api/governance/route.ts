@@ -4,8 +4,9 @@ import { getSession } from "@/lib/auth";
 import { db } from "@/lib/db";
 import { z } from "zod";
 
-// GET /api/governance — Get active governance rules
 export const dynamic = "force-dynamic";
+
+// GET /api/governance — Get active governance rules
 
 export async function GET() {
   const user = await getSession();
@@ -30,8 +31,6 @@ const updateSchema = z.object({
 });
 
 // PATCH /api/governance — Update rules (Council only)
-export const dynamic = "force-dynamic";
-
 export async function PATCH(req: NextRequest) {
   const user = await getSession();
   if (!user?.id || user.role !== "COUNCIL") {
@@ -69,4 +68,3 @@ export async function PATCH(req: NextRequest) {
 
   return NextResponse.json(updated);
 }
-

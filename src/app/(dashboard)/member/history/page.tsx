@@ -27,8 +27,8 @@ export default function HistoryPage() {
   }, [loading, user, router]);
 
   useEffect(() => {
-    fetch("/api/proposals").then(r => r.json()).then(setProposals).catch(() => { });
-    fetch("/api/events").then(r => r.json()).then(setEvents).catch(() => { });
+    fetch("/api/proposals").then(r => r.json()).then(setProposals).catch(() => {});
+    fetch("/api/events").then(r => r.json()).then(setEvents).catch(() => {});
   }, []);
 
   if (loading || !user) return null;

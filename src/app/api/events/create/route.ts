@@ -4,6 +4,8 @@ import { getSession } from "@/lib/auth";
 import { db } from "@/lib/db";
 import { z } from "zod";
 
+export const dynamic = "force-dynamic";
+
 const createEventSchema = z.object({
   type: z.enum(["LOTTERY", "GIVEAWAY"]),
   title: z.string().min(3).max(200),
@@ -12,9 +14,6 @@ const createEventSchema = z.object({
   drawDate: z.string().optional(),
   closesAt: z.string().optional(),
 });
-
-export const dynamic = "force-dynamic";
-
 export async function POST(req: NextRequest) {
   const user = await getSession();
   if (!user?.id || user.role !== "COUNCIL") {
@@ -57,4 +56,3 @@ export async function POST(req: NextRequest) {
 
   return NextResponse.json(event, { status: 201 });
 }
-

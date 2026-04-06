@@ -3,8 +3,9 @@ import { NextResponse } from "next/server";
 import { getSession } from "@/lib/auth";
 import { db } from "@/lib/db";
 
-// GET /api/logs — Get contract event logs (Admin only)
 export const dynamic = "force-dynamic";
+
+// GET /api/logs — Get contract event logs (Admin only)
 
 export async function GET() {
   const user = await getSession();
@@ -19,4 +20,3 @@ export async function GET() {
 
   return NextResponse.json(logs);
 }
-

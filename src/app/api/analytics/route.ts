@@ -1,7 +1,6 @@
 import { NextResponse } from "next/server";
 
 export const dynamic = "force-dynamic";
-
 export async function GET() {
   return NextResponse.json({
     totalVotes: 412,
@@ -12,4 +11,3 @@ export async function GET() {
     avgReputationScore: 623,
   });
 }
-

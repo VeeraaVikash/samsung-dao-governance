@@ -3,7 +3,6 @@ import { getSession } from "@/lib/auth";
 import { db } from "@/lib/db";
 
 export const dynamic = "force-dynamic";
-
 export async function GET(req: Request) {
   const currentUser = await getSession();
   if (!currentUser?.id) {
@@ -50,4 +49,3 @@ export async function GET(req: Request) {
 
   return NextResponse.json(profile);
 }
-

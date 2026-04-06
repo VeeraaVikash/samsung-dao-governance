@@ -2,8 +2,9 @@ import { NextRequest, NextResponse } from "next/server";
 import { getSession } from "@/lib/auth";
 import { db } from "@/lib/db";
 
-// GET /api/votes — Get current user's votes
 export const dynamic = "force-dynamic";
+
+// GET /api/votes — Get current user's votes
 
 export async function GET() {
   const user = await getSession();
@@ -22,8 +23,6 @@ export async function GET() {
 }
 
 // POST /api/votes — Cast a vote (alias for /api/elections POST)
-export const dynamic = "force-dynamic";
-
 export async function POST(req: NextRequest) {
   const user = await getSession();
   if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
@@ -72,4 +71,3 @@ export async function POST(req: NextRequest) {
 
   return NextResponse.json({ success: true, voteId: vote.id });
 }
-
