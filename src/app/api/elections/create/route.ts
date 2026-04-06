@@ -18,6 +18,8 @@ const createElectionSchema = z.object({
   })).min(2, "At least 2 candidates required"),
 });
 
+export const dynamic = "force-dynamic";
+
 export async function POST(req: NextRequest) {
   const user = await getSession();
   if (!user?.id || user.role !== "COUNCIL") {
@@ -66,3 +68,4 @@ export async function POST(req: NextRequest) {
 
   return NextResponse.json(election, { status: 201 });
 }
+

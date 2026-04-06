@@ -3,6 +3,8 @@ import bcrypt from "bcryptjs";
 import { db } from "@/lib/db";
 import { createSession } from "@/lib/auth";
 
+export const dynamic = "force-dynamic";
+
 export async function POST(req: NextRequest) {
   const { employeeId, password } = await req.json();
 
@@ -50,3 +52,4 @@ export async function POST(req: NextRequest) {
 
   return response;
 }
+

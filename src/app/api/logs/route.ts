@@ -4,6 +4,8 @@ import { getSession } from "@/lib/auth";
 import { db } from "@/lib/db";
 
 // GET /api/logs — Get contract event logs (Admin only)
+export const dynamic = "force-dynamic";
+
 export async function GET() {
   const user = await getSession();
   if (!user?.id || user.role !== "ADMIN") {
@@ -17,3 +19,4 @@ export async function GET() {
 
   return NextResponse.json(logs);
 }
+

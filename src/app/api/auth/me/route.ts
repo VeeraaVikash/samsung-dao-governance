@@ -1,6 +1,8 @@
 import { NextResponse } from "next/server";
 import { getSession } from "@/lib/auth";
 
+export const dynamic = "force-dynamic";
+
 export async function GET() {
   const user = await getSession();
   if (!user) {
@@ -23,3 +25,4 @@ export async function GET() {
     spuBalance: user.spuBalance,
   });
 }
+

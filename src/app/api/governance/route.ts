@@ -5,6 +5,8 @@ import { db } from "@/lib/db";
 import { z } from "zod";
 
 // GET /api/governance — Get active governance rules
+export const dynamic = "force-dynamic";
+
 export async function GET() {
   const user = await getSession();
   if (!user?.id) {
@@ -28,6 +30,8 @@ const updateSchema = z.object({
 });
 
 // PATCH /api/governance — Update rules (Council only)
+export const dynamic = "force-dynamic";
+
 export async function PATCH(req: NextRequest) {
   const user = await getSession();
   if (!user?.id || user.role !== "COUNCIL") {
@@ -65,3 +69,4 @@ export async function PATCH(req: NextRequest) {
 
   return NextResponse.json(updated);
 }
+

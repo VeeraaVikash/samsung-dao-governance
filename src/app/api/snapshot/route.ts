@@ -1,5 +1,7 @@
 import { NextResponse } from "next/server";
 
+export const dynamic = "force-dynamic";
+
 export async function GET() {
   return NextResponse.json({
     blockHeight: 72483921,
@@ -8,3 +10,4 @@ export async function GET() {
     network: "testnet",
   });
 }
+

@@ -4,6 +4,8 @@ import { getSession } from "@/lib/auth";
 import { db } from "@/lib/db";
 
 // GET /api/elections — List elections
+export const dynamic = "force-dynamic";
+
 export async function GET() {
   const elections = await db.election.findMany({
     include: {
@@ -17,6 +19,8 @@ export async function GET() {
 }
 
 // POST /api/elections — Cast a vote
+export const dynamic = "force-dynamic";
+
 export async function POST(req: NextRequest) {
   const user = await getSession();
   if (!user?.id) {
@@ -68,3 +72,4 @@ export async function POST(req: NextRequest) {
 
   return NextResponse.json({ success: true, voteId: vote.id });
 }
+

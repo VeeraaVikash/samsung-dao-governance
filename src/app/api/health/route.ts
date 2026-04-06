@@ -2,6 +2,8 @@ import { NextResponse } from "next/server";
 import { db } from "@/lib/db";
 import { getNetworkStatus } from "@/lib/hedera";
 
+export const dynamic = "force-dynamic";
+
 export async function GET() {
   try {
     // Check DB
@@ -23,3 +25,4 @@ export async function GET() {
     );
   }
 }
+

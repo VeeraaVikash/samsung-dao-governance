@@ -13,6 +13,8 @@ const createEventSchema = z.object({
   closesAt: z.string().optional(),
 });
 
+export const dynamic = "force-dynamic";
+
 export async function POST(req: NextRequest) {
   const user = await getSession();
   if (!user?.id || user.role !== "COUNCIL") {
@@ -55,3 +57,4 @@ export async function POST(req: NextRequest) {
 
   return NextResponse.json(event, { status: 201 });
 }
+

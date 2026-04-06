@@ -4,6 +4,8 @@ import { getSession } from "@/lib/auth";
 import { db } from "@/lib/db";
 
 // GET /api/multisig — Get pending multisig actions
+export const dynamic = "force-dynamic";
+
 export async function GET() {
   const user = await getSession();
   if (!user?.id) {
@@ -32,6 +34,8 @@ export async function GET() {
 }
 
 // POST /api/multisig — Sign a pending action (Council only)
+export const dynamic = "force-dynamic";
+
 export async function POST(req: Request) {
   const user = await getSession();
   if (!user?.id || user.role !== "COUNCIL") {
@@ -80,3 +84,4 @@ export async function POST(req: Request) {
     throw error;
   }
 }
+

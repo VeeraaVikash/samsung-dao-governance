@@ -4,6 +4,8 @@ import { getSession } from "@/lib/auth";
 import { db } from "@/lib/db";
 
 // GET /api/events — List events
+export const dynamic = "force-dynamic";
+
 export async function GET() {
   const user = await getSession();
   if (!user?.id) {
@@ -33,6 +35,8 @@ export async function GET() {
 }
 
 // POST /api/events — Enter an event (lottery/giveaway)
+export const dynamic = "force-dynamic";
+
 export async function POST(req: NextRequest) {
   const user = await getSession();
   if (!user?.id) {
@@ -68,3 +72,4 @@ export async function POST(req: NextRequest) {
     throw error;
   }
 }
+

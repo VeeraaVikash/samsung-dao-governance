@@ -10,6 +10,8 @@ const bindSchema = z.object({
 });
 
 // POST /api/wallet — Bind Hedera wallet to current user
+export const dynamic = "force-dynamic";
+
 export async function POST(req: NextRequest) {
   const currentUser = await getSession();
   if (!currentUser?.id) {
@@ -77,6 +79,8 @@ export async function POST(req: NextRequest) {
 }
 
 // GET /api/wallet — Get current user's wallet status
+export const dynamic = "force-dynamic";
+
 export async function GET() {
   const currentUser = await getSession();
   if (!currentUser?.id) {
@@ -93,3 +97,4 @@ export async function GET() {
 
   return NextResponse.json(walletInfo);
 }
+
