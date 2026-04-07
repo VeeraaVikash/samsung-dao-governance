@@ -140,7 +140,7 @@ async function main() {
   // ── Election ──
   const election = await db.election.create({
     data: {
-      title: "Council Election — Q2 2025",
+      title: "Product Feature Vote — Q2 2025",
       status: "LIVE",
       electionType: "SINGLE_CHOICE",
       startDate: new Date("2025-04-01T09:00:00"),
@@ -152,9 +152,9 @@ async function main() {
   });
   await db.candidate.createMany({
     data: [
-      { electionId: election.id, name: "Park Soo-yeon", department: "R&D", voteCount: 187 },
-      { electionId: election.id, name: "Lee Min-jun", department: "Engineering", voteCount: 143 },
-      { electionId: election.id, name: "Choi Dong-hyun", department: "Product", voteCount: 82 },
+      { electionId: election.id, name: "Add Night Mode to Samsung Gallery", department: "Galaxy Apps", voteCount: 187 },
+      { electionId: election.id, name: "S Pen Latency Improvement for Galaxy Note", department: "Mobile Division", voteCount: 143 },
+      { electionId: election.id, name: "Bixby Smart Home Third-Party Integration", department: "AI/IoT Division", voteCount: 82 },
     ],
   });
   console.log("  ✓ Election + 3 candidates\n");

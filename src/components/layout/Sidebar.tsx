@@ -56,8 +56,8 @@ const councilSections: SidebarSection[] = [
     title: "GOVERNANCE",
     items: [
       { id: "rules", label: "Rule builder", href: "/council/rules" },
-      { id: "election", label: "Election setup", href: "/council/election" },
-      { id: "voting", label: "Voting config", href: "/council/voting" },
+      { id: "election", label: "Feature vote setup", href: "/council/election" },
+      { id: "voting", label: "Vote parameters", href: "/council/voting" },
     ],
   },
   {
