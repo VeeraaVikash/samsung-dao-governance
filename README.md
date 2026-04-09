@@ -94,3 +94,34 @@ The architecture integrates authentication, authorization, custody, and executio
 - Persistent council identity and wallet binding
 - Secure backend verification using Firebase Admin
 - Modular architecture for DAO expansion
+
+## Design Philosophy
+
+This system is designed with the following principles:
+
+- Decentralization with accountability
+- Security-first architecture
+- Institutional-grade custody
+- Modular and scalable design
+- Real-world applicability beyond experimental DAOs
+
+---
+
+## Use Cases
+
+- Corporate governance automation
+- Multi-region decision-making systems
+- Treasury and asset management
+- Blockchain-based infrastructure coordination
+- Enterprise DAO frameworks
+
+---
+
+## License
+
+This project is intended for research, development, and enterprise prototyping. Licensing can be defined based on deployment and commercialization strategy.
+
+---
+
+## Author - Team Lead 
+Namoj PeriaKumar 
