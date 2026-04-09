@@ -1,4 +1,4 @@
-# Samsung Members DAO Governance System
+# Samsung Members DAO 
 
 ## Overview
 
