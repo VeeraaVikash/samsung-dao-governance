@@ -78,3 +78,19 @@ The architecture integrates authentication, authorization, custody, and executio
 - Secure transaction signing
 - Multi-party approval enforcement
 - Institutional-grade custody model
+
+### Security Notes
+- Never commit `.env` or `.pem` files
+- Store secrets securely using environment management systems
+- Rotate DFNS credentials periodically
+
+---
+
+## Key Features
+
+- Institutional MPC wallet creation using DFNS
+- Role-based authentication and access control
+- HQ-based governance identity mapping
+- Persistent council identity and wallet binding
+- Secure backend verification using Firebase Admin
+- Modular architecture for DAO expansion
