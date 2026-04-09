@@ -117,9 +117,15 @@ This system is designed with the following principles:
 
 ---
 
-## License
+## License & Copyright
 
-This project is intended for research, development, and enterprise prototyping. Licensing can be defined based on deployment and commercialization strategy.
+© Samsung Electronics Co., Ltd. All rights reserved.
+
+This project is developed as a conceptual and technical implementation inspired by decentralized governance systems and is not an official product of Samsung Electronics unless explicitly authorized.
+
+All trademarks, logos, and brand names are the property of their respective owners. Any use of the Samsung name, branding, or identity in this project is strictly for educational, experimental, or demonstrative purposes.
+
+Unauthorized commercial use, distribution, or representation as an official Samsung product is prohibited.
 
 ---
 
