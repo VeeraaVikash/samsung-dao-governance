@@ -60,6 +60,7 @@ model Wallet {
   is_council_wallet Boolean    @default(false)
   created_at        DateTime   @default(now())
   dfns_wallet_id    String?    @unique
+  hedera_account_id String?
   is_primary        Boolean    @default(true)
   user              User       @relation(fields: [user_id], references: [id])
 }
@@ -72,6 +73,7 @@ model Proposal {
   status              ProposalStatus        @default(DRAFT)
   ipfs_cid            String?
   onchain_proposal_id String?               @unique
+  onchain_id          Int?                  @unique
   created_by          String                @db.Uuid
   start_time          DateTime?
   end_time            DateTime?
@@ -380,6 +382,7 @@ enum ProposalStatus {
   DRAFT
   SIGNALING
   ON_CHAIN_VOTE
+  ACTIVE
   PASSED
   FAILED
   EXECUTED
@@ -417,4 +420,14 @@ enum ElectionStatus {
   LIVE
   CLOSED
   CANCELLED
+}
+
+model VotingPowerSync {
+  id            String   @id @default(uuid())
+  account_id    String
+  evm_address   String
+  hts_balance   String
+  erc20_balance String
+  delta         String
+  last_synced_at DateTime @default(now())
 }
