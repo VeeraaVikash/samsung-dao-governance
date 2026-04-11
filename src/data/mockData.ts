@@ -107,15 +107,6 @@ export const mockProposals: Proposal[] = [
   },
 ];
 
-export const mockCouncilMembers = [
-  { id: 'c1', name: 'Dr. Kim Hyun-soo', role: 'Head of Product Strategy', votingPower: 15000, wallet: '0x1a2b...3c4d', status: 'active' as const, avatar: '' },
-  { id: 'c2', name: 'Lee Min-ji', role: 'VP Engineering', votingPower: 12000, wallet: '0x5e6f...7g8h', status: 'active' as const, avatar: '' },
-  { id: 'c3', name: 'Park Joon-ho', role: 'Chief Innovation Officer', votingPower: 14000, wallet: '0x9i0j...1k2l', status: 'active' as const, avatar: '' },
-  { id: 'c4', name: 'Choi Soo-yeon', role: 'Director of UX', votingPower: 10000, wallet: '0x3m4n...5o6p', status: 'active' as const, avatar: '' },
-  { id: 'c5', name: 'Jung Tae-woo', role: 'Head of Mobile Division', votingPower: 13000, wallet: '0x7q8r...9s0t', status: 'active' as const, avatar: '' },
-  { id: 'c6', name: 'Kang Hye-rin', role: 'Lead Blockchain Architect', votingPower: 11000, wallet: '0xu1v2...w3x4', status: 'active' as const, avatar: '' },
-];
-
 export const mockForumPosts: ForumPost[] = [
   { id: 'fp-1', title: 'Should Samsung integrate Hedera into Samsung Pay?', category: 'Product Ideas', tags: ['Samsung Pay', 'Hedera'], author: 'Kim Jae-won', authorAvatar: '', repliesCount: 47, lastActivity: '2 hours ago', createdAt: '2025-03-28', content: '' },
   { id: 'fp-2', title: 'Feature Request: Cross-device clipboard with Galaxy AI', category: 'Feature Requests', tags: ['Galaxy AI', 'Ecosystem'], author: 'Park Soo-min', authorAvatar: '', repliesCount: 32, lastActivity: '5 hours ago', createdAt: '2025-03-27', content: '' },
