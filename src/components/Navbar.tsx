@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ChevronDown, Menu, X, User, LogOut, Building2 } from 'lucide-react';
@@ -24,12 +24,23 @@ const navItems = [
 
 export function Navbar() {
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [mobileGovOpen, setMobileGovOpen] = useState(false);
   const [govOpen, setGovOpen] = useState(false);
   const location = useLocation();
   const { isAuthenticated, user, logout } = useAuthStore();
   const { disconnect } = useWalletStore();
 
   const isActive = (path: string) => location.pathname === path;
+
+  useEffect(() => {
+    if (!mobileOpen) {
+      setMobileGovOpen(false);
+      return;
+    }
+    const onGovernanceRoute =
+      location.pathname === '/governance' || location.pathname.startsWith('/governance/');
+    if (onGovernanceRoute) setMobileGovOpen(true);
+  }, [mobileOpen, location.pathname]);
 
   const handleLogout = () => {
     logout();
@@ -108,6 +119,18 @@ export function Navbar() {
                 {item.label}
               </Link>
             )
+          )}
+          {isAuthenticated && user?.role === 'COUNCIL' && (
+            <Link
+              to="/council"
+              className={`rounded-lg px-3 py-2 text-sm font-medium transition-colors ${
+                location.pathname === '/council' || location.pathname.startsWith('/council/')
+                  ? 'bg-primary/10 text-primary'
+                  : 'text-muted-foreground hover:text-foreground'
+              }`}
+            >
+              Council HQ
+            </Link>
           )}
         </div>
 
@@ -196,35 +219,119 @@ export function Navbar() {
               )}
               {navItems.map((item) =>
                 item.children ? (
-                  <div key={item.label} className="space-y-1">
-                    <p className="px-3 py-2 text-xs font-semibold uppercase tracking-wider text-muted-foreground">{item.label}</p>
-                    {item.children.map((child) => (
-                      <Link
-                        key={child.path}
-                        to={child.path}
-                        onClick={() => setMobileOpen(false)}
-                        className="block rounded-lg px-3 py-2 text-sm text-muted-foreground hover:bg-muted"
-                      >
-                        {child.label}
-                      </Link>
-                    ))}
+                  <div key={item.label} className="space-y-0.5">
+                    <button
+                      type="button"
+                      onClick={() => setMobileGovOpen((o) => !o)}
+                      className="flex w-full items-center justify-between gap-2 rounded-lg px-3 py-2.5 text-left text-xs font-semibold uppercase tracking-wider text-muted-foreground transition-colors hover:bg-muted/80 hover:text-foreground"
+                      aria-expanded={mobileGovOpen}
+                    >
+                      {item.label}
+                      <ChevronDown
+                        className={`h-4 w-4 shrink-0 text-muted-foreground transition-transform duration-200 ${
+                          mobileGovOpen ? 'rotate-180' : ''
+                        }`}
+                      />
+                    </button>
+                    <AnimatePresence initial={false}>
+                      {mobileGovOpen && (
+                        <motion.div
+                          initial={{ height: 0, opacity: 0 }}
+                          animate={{ height: 'auto', opacity: 1 }}
+                          exit={{ height: 0, opacity: 0 }}
+                          transition={{ duration: 0.2 }}
+                          className="overflow-hidden"
+                        >
+                          <div className="ml-2 space-y-0.5 border-l-2 border-primary/15 pl-3 py-1">
+                            {item.children.map((child) => (
+                              <Link
+                                key={child.path}
+                                to={child.path}
+                                onClick={() => setMobileOpen(false)}
+                                className={`block rounded-lg px-3 py-2 text-sm transition-colors ${
+                                  isActive(child.path)
+                                    ? 'bg-primary/10 font-medium text-primary'
+                                    : 'text-muted-foreground hover:bg-muted'
+                                }`}
+                              >
+                                {child.label}
+                              </Link>
+                            ))}
+                          </div>
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
                   </div>
                 ) : (
                   <Link
                     key={item.path}
                     to={item.path!}
                     onClick={() => setMobileOpen(false)}
-                    className="block rounded-lg px-3 py-2 text-sm text-muted-foreground hover:bg-muted"
+                    className={`block rounded-lg px-3 py-2 text-sm transition-colors ${
+                      isActive(item.path!)
+                        ? 'bg-primary/10 font-medium text-primary'
+                        : 'text-muted-foreground hover:bg-muted'
+                    }`}
                   >
                     {item.label}
                   </Link>
                 )
               )}
+              {isAuthenticated && user?.role === 'COUNCIL' && (
+                <Link
+                  to="/council"
+                  onClick={() => setMobileOpen(false)}
+                  className={`mt-1 flex items-center gap-2 rounded-lg px-3 py-2 text-sm transition-colors ${
+                    location.pathname === '/council' || location.pathname.startsWith('/council/')
+                      ? 'bg-primary/10 font-medium text-primary'
+                      : 'text-muted-foreground hover:bg-muted'
+                  }`}
+                >
+                  Council HQ
+                </Link>
+              )}
+              {isAuthenticated && (
+                <Link
+                  to="/profile"
+                  onClick={() => setMobileOpen(false)}
+                  className={`mt-1 flex items-center gap-2 rounded-lg px-3 py-2 text-sm transition-colors ${
+                    isActive('/profile')
+                      ? 'bg-primary/10 font-medium text-primary'
+                      : 'text-muted-foreground hover:bg-muted'
+                  }`}
+                >
+                  <User className="h-4 w-4 shrink-0" />
+                  Profile
+                </Link>
+              )}
               <div className="flex gap-2 pt-3">
-                <WalletButton />
-                {isAuthenticated && (
-                  <Button variant="ghost" size="sm" onClick={handleLogout} className="text-destructive">
-                    <LogOut className="h-4 w-4 mr-1" /> Logout
+                <div className="min-w-0 flex-1 [&_button]:w-full">
+                  <WalletButton />
+                </div>
+                {!isAuthenticated ? (
+                  <div className="min-w-0 flex-1">
+                    <Link to="/login" onClick={() => setMobileOpen(false)} className="block w-full">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className="h-9 w-full gap-2 border-primary/30 text-primary hover:bg-primary/5"
+                      >
+                        Sign In
+                      </Button>
+                    </Link>
+                  </div>
+                ) : (
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="h-9 shrink-0 gap-1 text-destructive hover:bg-destructive/10 hover:text-destructive"
+                    onClick={() => {
+                      handleLogout();
+                      setMobileOpen(false);
+                    }}
+                  >
+                    <LogOut className="h-4 w-4" />
+                    Logout
                   </Button>
                 )}
               </div>
