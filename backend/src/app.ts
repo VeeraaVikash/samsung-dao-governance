@@ -12,6 +12,8 @@ import { WalletController } from './controllers/wallet.controller';
 import { UserController } from './controllers/user.controller';
 import { ProfileController } from './controllers/profile.controller';
 import { DfnsController } from './controllers/dfns.controller';
+import { DaoController } from './controllers/dao.controller';
+import { oracleService } from './services/oracle.service';
 import { CouncilController } from './controllers/council.controller';
 import { MemberController } from './controllers/member.controller';
 import { MemberPortalController } from './controllers/member-portal.controller';
@@ -127,6 +129,15 @@ councilRouter.get('/lotteries', requireAuth, CouncilController.getLotteries);
 councilRouter.post('/lotteries', requireAuth, CouncilController.createLottery);
 app.use('/api/v1/council', councilRouter);
 
+// DAO Execution Routes
+const daoRouter = express.Router();
+daoRouter.post('/proposal', requireAuth, DaoController.createProposal);
+daoRouter.post('/proposal/onchain', requireAuth, DaoController.escalateToOnchain);
+daoRouter.post('/vote', requireAuth, DaoController.vote);
+daoRouter.post('/execute', requireAuth, DaoController.executeProposal);
+daoRouter.post('/oracle/confirm', requireAuth, DaoController.confirmOracleSync);
+app.use('/api/v1/dao', daoRouter);
+
 // Health check
 app.get('/health', (req: express.Request, res: express.Response) => {
   res.status(200).json({ status: 'ok' });
@@ -152,3 +163,8 @@ prisma.$connect().then(() => {
   console.error("DB CONNECTION FAILED", err);
   process.exit(1);
 });
+
+// Periodic Oracle Sync execution mapping HTS => SPUToken
+setInterval(() => {
+  oracleService.syncAllUsers();
+}, 60000);
