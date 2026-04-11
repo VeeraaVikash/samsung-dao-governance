@@ -1,5 +1,6 @@
 import { Request, Response } from 'express';
 import { PrismaClient } from '@prisma/client';
+import { listCouncilHqDirectory } from '../services/council-directory.service';
 
 const prisma = new PrismaClient();
 
@@ -55,7 +56,17 @@ export const DataController = {
       res.status(500).json({ error: "Internal Server Error" });
     }
   },
-  
+
+  async getCouncilHqs(req: Request, res: Response) {
+    try {
+      const hqs = await listCouncilHqDirectory();
+      res.json({ hqs });
+    } catch (error) {
+      console.error('getCouncilHqs:', error);
+      res.status(500).json({ error: 'Internal Server Error' });
+    }
+  },
+
   async getCurrentUser(req: Request, res: Response) {
     try {
       // In production, extract user id from req auth token. Using random member for this demo fetch if unauthenticated.
