@@ -17,7 +17,7 @@ const sections = [
     title: 'PARTICIPATE',
     items: [
       { label: 'Vote', to: '/member/vote', icon: Vote, countsKey: 'activeVotes' },
-      { label: 'Proposals', to: '/member/proposals', icon: FileText, countsKey: 'proposalsCreated' },
+      { label: 'Proposals', to: '/member/proposals', icon: FileText, countsKey: 'totalProposals' },
       { label: 'Lottery', to: '/member/lottery', icon: Ticket },
       { label: 'Giveaway', to: '/member/giveaway', icon: Gift },
     ],
@@ -55,7 +55,9 @@ export function MemberSidebar() {
               
               let badgeCount = 0;
               if (item.countsKey === 'activeVotes' && metrics?.activeVotes) badgeCount = metrics.activeVotes;
-              else if (item.countsKey === 'proposalsCreated' && metrics?.proposalsCreated) badgeCount = metrics.proposalsCreated;
+              else if (item.countsKey === 'totalProposals' && metrics?.totalProposals) {
+                badgeCount = metrics.totalProposals;
+              }
 
               return (
                 <NavLink
