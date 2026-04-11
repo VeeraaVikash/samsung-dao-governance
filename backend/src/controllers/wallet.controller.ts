@@ -19,6 +19,18 @@ function normalizeHederaAccountId(raw: string): string | null {
 }
 
 export const WalletController = {
+  /** POST /wallet/connect — alias for HashPack binding (accepts snake_case or camelCase). */
+  async connect(req: Request, res: Response) {
+    const b = (req.body ?? {}) as Record<string, unknown>;
+    req.body = {
+      ...b,
+      account_id: b.account_id ?? b.accountId,
+      signature_hex: b.signature_hex ?? b.signatureHex,
+      message: b.message,
+    };
+    return WalletController.connectHashPack(req, res);
+  },
+
   /**
    * POST /wallet/hashpack/connect
    * Member: Pair HashPack via HashConnect, sign a message, verify against mirror public key.
