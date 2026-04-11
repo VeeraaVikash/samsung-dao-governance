@@ -19,6 +19,12 @@ export function deriveHQ(email: string, timezone: string): string {
     if (emailLower.includes("+brazil")) return "BRAZIL";
     if (emailLower.includes("+semiconductor")) return "SEMICONDUCTOR";
     if (emailLower.includes("+digitalcity")) return "DIGITAL_CITY";
+    
+    // Official Auth quick logins support
+    if (emailLower.includes("+germany")) return "EUROPE";
+    if (emailLower.includes("+japan")) return "DIGITAL_CITY";
+    if (emailLower.includes("+kr")) return "KOREA";
+    if (emailLower.includes("+us")) return "USA";
 
     if (timezone.includes("Asia/Kolkata")) return "INDIA";
     if (timezone.includes("America/New_York")) return "USA";
