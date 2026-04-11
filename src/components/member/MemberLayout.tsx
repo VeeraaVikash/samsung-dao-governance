@@ -3,17 +3,20 @@ import { Outlet, useNavigate } from 'react-router-dom';
 import { MemberSidebar } from './MemberSidebar';
 import { useAuthStore } from '@/stores/useAuthStore';
 import { useMemberDashboardStore } from '@/stores/useMemberDashboardStore';
+import { useMemberPortalStore } from '@/stores/useMemberPortalStore';
 
 export function MemberLayout() {
   const navigate = useNavigate();
   const { token, isHydrated } = useAuthStore();
   const { loadMetrics } = useMemberDashboardStore();
+  const syncUserFromAuth = useMemberPortalStore((s) => s.syncUserFromAuth);
+  const syncWalletFromAuth = useMemberPortalStore((s) => s.syncWalletFromAuth);
+  const loadProfile = useMemberPortalStore((s) => s.loadProfile);
+  const loadPortalData = useMemberPortalStore((s) => s.loadPortalData);
 
   useEffect(() => {
     if (!isHydrated) return;
     if (!token) {
-      // For this feature, users must be logged in to view member dashboard fully
-      // We will redirect to auth for safety
       navigate('/login', { replace: true });
       return;
     }
@@ -22,11 +25,14 @@ export function MemberLayout() {
   useEffect(() => {
     if (token) {
       loadMetrics();
-      // Poll every 30s
+      syncUserFromAuth();
+      syncWalletFromAuth();
+      void loadProfile();
+      void loadPortalData();
       const interval = setInterval(loadMetrics, 30000);
       return () => clearInterval(interval);
     }
-  }, [token, loadMetrics]);
+  }, [token, loadMetrics, syncUserFromAuth, syncWalletFromAuth, loadProfile, loadPortalData]);
 
   return (
     <div className="flex bg-background">
