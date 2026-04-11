@@ -380,9 +380,11 @@ enum ProposalType {
 
 enum ProposalStatus {
   DRAFT
+  PENDING
   SIGNALING
   ON_CHAIN_VOTE
   ACTIVE
+  QUEUED
   PASSED
   FAILED
   EXECUTED

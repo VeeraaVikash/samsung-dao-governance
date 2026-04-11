@@ -24,7 +24,7 @@ export class BlockchainService {
 
     const governanceAbi = [
       "function createProposal(string memory title) external",
-      "function proposals(uint) external view returns (uint id, string title, uint start, uint end, bool executed)",
+      "function proposals(uint) external view returns (uint id, string title, uint startBlock, uint endBlock, bool executed, bool canceled)",
       "function timelock() external view returns (address)",
       "function proposalCount() external view returns (uint)"
     ];
@@ -55,15 +55,20 @@ export class BlockchainService {
     }
   }
 
+  public async getCurrentBlock(): Promise<number> {
+    return await this.provider.getBlockNumber();
+  }
+
   public async getProposalState(proposalId: number) {
     try {
       const p = await this.governanceContract.proposals(proposalId);
       return {
         id: Number(p.id),
         title: p.title,
-        start: Number(p.start),
-        end: Number(p.end),
-        executed: p.executed
+        start: Number(p.startBlock),
+        end: Number(p.endBlock),
+        executed: p.executed,
+        canceled: p.canceled ?? false
       };
     } catch (error) {
       console.error("BlockchainService: getProposalState error:", error);

@@ -5,6 +5,42 @@ import { PrismaClient } from '@prisma/client';
 const prisma = new PrismaClient();
 
 export const ProposalController = {
+  // GET all proposals (single source of truth for frontend)
+  async getAll(req: Request, res: Response) {
+    try {
+      const proposals = await prisma.proposal.findMany({
+        orderBy: { created_at: 'desc' },
+        include: {
+          creator: { select: { id: true, name: true, email: true } },
+          result: true,
+        },
+      });
+      res.json(proposals);
+    } catch (error) {
+      res.status(500).json({ error: 'Internal Server Error' });
+    }
+  },
+
+  // GET single proposal by ID
+  async getById(req: Request, res: Response) {
+    try {
+      const { id } = req.params;
+      const proposal = await prisma.proposal.findUnique({
+        where: { id },
+        include: {
+          creator: { select: { id: true, name: true, email: true } },
+          result: true,
+          signaling_votes: true,
+          onchain_votes: true,
+        },
+      });
+      if (!proposal) return res.status(404).json({ error: 'Proposal not found' });
+      res.json(proposal);
+    } catch (error) {
+      res.status(500).json({ error: 'Internal Server Error' });
+    }
+  },
+
   // 1. Create Proposal (Draft Phase)
   async createDraft(req: Request, res: Response) {
     try {

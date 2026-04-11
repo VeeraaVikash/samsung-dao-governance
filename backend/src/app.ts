@@ -14,6 +14,8 @@ import { ProfileController } from './controllers/profile.controller';
 import { DfnsController } from './controllers/dfns.controller';
 import { DaoController } from './controllers/dao.controller';
 import { oracleService } from './services/oracle.service';
+import { proposalSyncService } from './services/proposal-sync.service';
+import { blockchainListenerService } from './services/blockchain-listener.service';
 import { CouncilController } from './controllers/council.controller';
 import { MemberController } from './controllers/member.controller';
 import { MemberPortalController } from './controllers/member-portal.controller';
@@ -53,6 +55,8 @@ app.use('/api/v1/data', dataRouter);
 // Proposal Routes
 const proposalRouter = express.Router();
 proposalRouter.get('/', requireAuth, MemberPortalController.listProposals);
+proposalRouter.get('/all', ProposalController.getAll);          // Public: synced proposals
+proposalRouter.get('/:id', ProposalController.getById);         // Public: single proposal
 proposalRouter.post('/', requireAuth, MemberPortalController.createProposalDraft);
 proposalRouter.post('/draft', requireAuth, ProposalController.createDraft);
 proposalRouter.post('/:proposalId/publish', requireAuth, ProposalController.publishProposal);
@@ -158,13 +162,29 @@ prisma.$connect().then(() => {
   console.log("DB CONNECTED");
   server.listen(PORT, () => {
     console.log(`scmn Backend is running on port ${PORT}`);
+
+    // Wire Socket.IO into sync services
+    proposalSyncService.setSocketIO(io);
+    blockchainListenerService.setSocketIO(io);
+
+    // Oracle Sync: HTS => SPUToken (every 60s)
+    setInterval(() => {
+      oracleService.syncAllUsers();
+    }, 60000);
+
+    // Proposal Sync: DB <=> Governance (every 30s)
+    setInterval(() => {
+      proposalSyncService.syncProposals();
+    }, 30000);
+
+    // Blockchain Event Listener: poll every 30s
+    setInterval(() => {
+      blockchainListenerService.pollEvents();
+    }, 30000);
+
+    console.log('[Cron] Oracle sync (60s), Proposal sync (30s), Event listener (30s) started');
   });
 }).catch(err => {
   console.error("DB CONNECTION FAILED", err);
   process.exit(1);
 });
-
-// Periodic Oracle Sync execution mapping HTS => SPUToken
-setInterval(() => {
-  oracleService.syncAllUsers();
-}, 60000);
