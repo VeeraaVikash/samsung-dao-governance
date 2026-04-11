@@ -21,11 +21,11 @@ export function AuthHydrator() {
   useEffect(() => {
     if (!isHydrated || isConnected || !user || wallets.length === 0) return;
 
-    const primaryWallet = wallets.find(w => w.is_primary) || wallets[0];
-    connect(
-      primaryWallet.wallet_address,
-      primaryWallet.wallet_type as 'METAMASK' | 'DFNS'
-    );
+    const primaryWallet = wallets.find((w) => w.is_primary) || wallets[0];
+    const wt = primaryWallet.wallet_type;
+    const mapped: 'METAMASK' | 'DFNS' | 'HASHPACK' =
+      wt === 'HASHPACK' ? 'HASHPACK' : wt === 'DFNS' ? 'DFNS' : 'METAMASK';
+    connect(primaryWallet.wallet_address, mapped);
 
     if (user.assigned_hq) {
       setHqAssignment(user.assigned_hq);
