@@ -14,7 +14,8 @@ export class BlockchainService {
       console.warn("BlockchainService: Missing PRIVATE_KEY or GOVERNANCE_ADDRESS.");
     }
 
-    this.provider = new ethers.JsonRpcProvider(rpcUrl);
+    // Hedera Hashio RPC rejects batch requests — disable batching entirely
+    this.provider = new ethers.JsonRpcProvider(rpcUrl, undefined, { batchMaxCount: 1 });
     
     // Provide a fallback random wallet if keys are missing to prevent crash on boot
     this.wallet = privateKey 
