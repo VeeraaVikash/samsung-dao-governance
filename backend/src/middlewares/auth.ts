@@ -1,5 +1,8 @@
 import { Request, Response, NextFunction } from 'express';
 import * as admin from 'firebase-admin';
+import { PrismaClient, Role } from '@prisma/client';
+
+const prisma = new PrismaClient();
 
 // Initialize Firebase Admin focusing on projectId for token verification if no SA is present
 if (!admin.apps.length) {
@@ -25,7 +28,20 @@ export const requireAuth = async (req: Request, res: Response, next: NextFunctio
   try {
     const decodedToken = await admin.auth().verifyIdToken(token);
     console.log("DECODED USER:", decodedToken);
-    (req as any).user = { uid: decodedToken.uid, email: decodedToken.email };
+    req.user = {
+      uid: decodedToken.uid,
+      email: decodedToken.email ?? undefined,
+      name: decodedToken.name,
+      signInProvider: decodedToken.firebase?.sign_in_provider,
+    };
+
+    void prisma.user
+      .updateMany({
+        where: { firebase_uid: decodedToken.uid, role: Role.COUNCIL },
+        data: { last_seen_at: new Date() },
+      })
+      .catch(() => {});
+
     next();
   } catch (error) {
     console.error('Firebase Auth Error:', error);
