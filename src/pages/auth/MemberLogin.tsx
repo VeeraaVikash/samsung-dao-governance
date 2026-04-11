@@ -1,14 +1,25 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
-import { signInWithPopup } from 'firebase/auth';
+import {
+  signInWithPopup,
+  signInWithEmailAndPassword,
+  createUserWithEmailAndPassword,
+  signOut,
+  type User as FirebaseUser,
+} from 'firebase/auth';
 import { auth, googleProvider } from '@/lib/firebase';
+import {
+  getSamsungSsoEmailSuffixes,
+  isSamsungCorporateGoogleEmail,
+  SAMSUNG_GOOGLE_SSO_MESSAGE,
+} from '@/lib/samsung-sso';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { useAuthStore } from '@/stores/useAuthStore';
 import { useWalletStore } from '@/stores/useWalletStore';
 import { toast } from 'sonner';
-import { Users, ArrowLeft, Loader2, Wallet, AlertTriangle } from 'lucide-react';
+import { Users, ArrowLeft, Loader2, Wallet, AlertTriangle, Mail } from 'lucide-react';
 import { authenticateWithMetaMask, isMetaMaskInstalled, addHederaTestnet } from '@/lib/metamask';
 
 type MemberStep = 'member-auth' | 'member-wallet';
@@ -19,74 +30,115 @@ export default function MemberLogin() {
   const [step, setStep] = useState<MemberStep>('member-auth');
   const [isLoading, setIsLoading] = useState(false);
   const [nickname, setNickname] = useState('');
-  
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [emailAuthMode, setEmailAuthMode] = useState<'signin' | 'signup'>('signin');
+
   const navigate = useNavigate();
   const { login, updateUser, setWallets } = useAuthStore();
   const { connect } = useWalletStore();
 
-  const handleMemberLogin = async () => {
+  const completeSessionAfterFirebase = async (firebaseUser: FirebaseUser) => {
+    const token = await firebaseUser.getIdToken();
+
+    if (!token || token.length < 100) {
+      throw new Error('Invalid or missing Firebase token.');
+    }
+
+    const response = await fetch(`${API_BASE}/auth/login`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+    });
+    if (!response.ok) {
+      const raw = await response.text();
+      let msg = raw.slice(0, 200) || 'Login failed';
+      try {
+        const j = JSON.parse(raw) as { error?: string };
+        if (typeof j?.error === 'string') msg = j.error;
+      } catch {
+        /* HTML or plain text */
+      }
+      console.error('BACKEND ERROR:', raw.slice(0, 500));
+      throw new Error(msg);
+    }
+    const data = await response.json();
+    const user = data.user;
+
+    login(token, user);
+
+    if (!user.nickname) {
+      if (!nickname.trim()) {
+        toast.info('Enter a nickname above to finish creating your profile.');
+        return;
+      }
+      const onboardRes = await fetch(`${API_BASE}/auth/onboard`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+        body: JSON.stringify({ nickname }),
+      });
+      if (!onboardRes.ok) {
+        const raw = await onboardRes.text();
+        let msg = 'Onboarding failed';
+        try {
+          const j = JSON.parse(raw) as { error?: string };
+          if (typeof j?.error === 'string') msg = j.error;
+        } catch {
+          if (raw) msg = raw.slice(0, 200);
+        }
+        throw new Error(msg);
+      }
+      const d = await onboardRes.json();
+      updateUser(d.user);
+    }
+
+    toast.success('Signed in', { description: 'Connect MetaMask to continue.' });
+    setStep('member-wallet');
+  };
+
+  const handleMemberGoogleLogin = async () => {
     setIsLoading(true);
     try {
       const result = await signInWithPopup(auth, googleProvider);
-      const token = await result.user.getIdToken();
-      console.log("TOKEN:", token);
-
-      if (!token || token.length < 100) {
-        throw new Error("Invalid or missing Firebase token.");
+      if (!isSamsungCorporateGoogleEmail(result.user.email)) {
+        await signOut(auth);
+        toast.error('Samsung Google SSO only', { description: SAMSUNG_GOOGLE_SSO_MESSAGE });
+        return;
       }
-      
-      const response = await fetch(`${API_BASE}/auth/login`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` }
-      });
-      if (!response.ok) {
-        const errorText = await response.text();
-        console.error("BACKEND ERROR:", errorText);
-        throw new Error(errorText);
-      }
-      const data = await response.json();
-      const user = data.user;
-      
-      login(token, user);
-
-      // Onboard if needed
-      if (!user.nickname) {
-        if (!nickname.trim()) {
-          setIsLoading(false);
-          return;
-        }
-        const onboardRes = await fetch(`${API_BASE}/auth/onboard`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
-          body: JSON.stringify({ nickname, role: 'MEMBER' })
-        });
-        if (onboardRes.ok) {
-          const d = await onboardRes.json();
-          updateUser(d.user);
-        }
-      }
-
-      // Check if user already has a wallet
-      const walletRes = await fetch(`${API_BASE}/wallet/me`, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
-      if (walletRes.ok) {
-        const walletData = await walletRes.json();
-        if (walletData.wallets && walletData.wallets.length > 0) {
-          const primaryWallet = walletData.wallets.find((w: any) => w.is_primary) || walletData.wallets[0];
-          setWallets(walletData.wallets);
-          connect(primaryWallet.wallet_address, 'METAMASK');
-          toast.success('Welcome back! Wallet restored.');
-          navigate('/dashboard');
-          return;
-        }
-      }
-
-      // No wallet — show MetaMask connect step
-      setStep('member-wallet');
-    } catch (error: any) {
+      await completeSessionAfterFirebase(result.user);
+    } catch (error: unknown) {
       console.error(error);
-      toast.error('Authentication failed', { description: error.message });
+      const message = error instanceof Error ? error.message : 'Sign-in failed';
+      toast.error('Authentication failed', { description: message });
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleMemberEmailAuth = async () => {
+    if (!email.trim() || !password) {
+      toast.error('Enter email and password');
+      return;
+    }
+    setIsLoading(true);
+    try {
+      const cred =
+        emailAuthMode === 'signup'
+          ? await createUserWithEmailAndPassword(auth, email.trim(), password)
+          : await signInWithEmailAndPassword(auth, email.trim(), password);
+      await completeSessionAfterFirebase(cred.user);
+    } catch (error: unknown) {
+      console.error(error);
+      const anyErr = error as { code?: string; message?: string };
+      const code = anyErr.code ?? '';
+      let description = anyErr.message ?? 'Sign-in failed';
+      if (code === 'auth/email-already-in-use') description = 'This email is already registered. Try signing in.';
+      if (code === 'auth/invalid-email') description = 'Enter a valid email address.';
+      if (code === 'auth/weak-password') description = 'Use a stronger password (at least 6 characters).';
+      if (code === 'auth/user-not-found' || code === 'auth/wrong-password' || code === 'auth/invalid-credential') {
+        description = 'Incorrect email or password.';
+      }
+      if (code === 'auth/too-many-requests') description = 'Too many attempts. Try again later.';
+      toast.error(emailAuthMode === 'signup' ? 'Could not create account' : 'Sign-in failed', { description });
     } finally {
       setIsLoading(false);
     }
@@ -180,8 +232,8 @@ export default function MemberLogin() {
               </div>
 
               <Button
-                disabled={isLoading || !nickname.trim()}
-                onClick={handleMemberLogin}
+                disabled={isLoading}
+                onClick={handleMemberGoogleLogin}
                 className="w-full bg-emerald-600 hover:bg-emerald-700 text-white h-11"
               >
                 {isLoading ? (
@@ -193,6 +245,89 @@ export default function MemberLogin() {
                   </>
                 )}
               </Button>
+              <p className="text-[10px] text-muted-foreground text-center mt-2 leading-relaxed">
+                Google: Samsung Workspace SSO only ({getSamsungSsoEmailSuffixes().map((s) => `@${s}`).join(', ')}).
+              </p>
+
+              <div className="relative my-5">
+                <div className="absolute inset-0 flex items-center">
+                  <span className="w-full border-t border-border" />
+                </div>
+                <div className="relative flex justify-center text-[10px] uppercase tracking-wider">
+                  <span className="bg-card px-2 text-muted-foreground">Or email</span>
+                </div>
+              </div>
+
+              <div className="space-y-3">
+                <div>
+                  <label className="text-xs font-semibold uppercase text-muted-foreground">Email</label>
+                  <Input
+                    type="email"
+                    autoComplete="email"
+                    placeholder="you@example.com"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    className="mt-1"
+                  />
+                </div>
+                <div>
+                  <label className="text-xs font-semibold uppercase text-muted-foreground">Password</label>
+                  <Input
+                    type="password"
+                    autoComplete={emailAuthMode === 'signup' ? 'new-password' : 'current-password'}
+                    placeholder="••••••••"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    className="mt-1"
+                  />
+                </div>
+                <Button
+                  type="button"
+                  disabled={
+                    isLoading ||
+                    !email.trim() ||
+                    !password ||
+                    (emailAuthMode === 'signup' && !nickname.trim())
+                  }
+                  onClick={handleMemberEmailAuth}
+                  variant="outline"
+                  className="w-full h-11 gap-2 border-border"
+                >
+                  {isLoading ? (
+                    <><Loader2 className="h-4 w-4 animate-spin" /> Please wait...</>
+                  ) : (
+                    <>
+                      <Mail className="h-4 w-4" />
+                      {emailAuthMode === 'signup' ? 'Create account' : 'Sign in with email'}
+                    </>
+                  )}
+                </Button>
+                <p className="text-center text-xs text-muted-foreground">
+                  {emailAuthMode === 'signup' ? (
+                    <>
+                      Already have an account?{' '}
+                      <button
+                        type="button"
+                        className="font-semibold text-primary hover:underline"
+                        onClick={() => setEmailAuthMode('signin')}
+                      >
+                        Sign in
+                      </button>
+                    </>
+                  ) : (
+                    <>
+                      New here?{' '}
+                      <button
+                        type="button"
+                        className="font-semibold text-primary hover:underline"
+                        onClick={() => setEmailAuthMode('signup')}
+                      >
+                        Create an account
+                      </button>
+                    </>
+                  )}
+                </p>
+              </div>
             </div>
           </motion.div>
         )}
