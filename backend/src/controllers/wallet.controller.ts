@@ -1,5 +1,6 @@
 import { Request, Response } from 'express';
 import { PrismaClient, Role, WalletType } from '@prisma/client';
+import { createWallet } from '../utils/wallet.factory';
 import { ethers } from 'ethers';
 import {
   fetchTestnetAccountPublicKey,
@@ -237,7 +238,7 @@ export const WalletController = {
         const rest = wallets.filter(
           (w) => w.wallet_address.toLowerCase() !== treasuryAddr.toLowerCase()
         );
-        const fromTreasury = {
+        const fromTreasury = createWallet({
           id: hw.id,
           user_id: user.id,
           wallet_address: treasuryAddr,
@@ -249,7 +250,7 @@ export const WalletController = {
           is_council_wallet: true,
           is_primary: true,
           created_at: hw.created_at,
-        };
+        });
         wallets = [fromTreasury, ...rest];
       }
 
