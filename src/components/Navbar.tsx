@@ -59,16 +59,26 @@ export function Navbar() {
     <motion.nav
       initial={{ y: -20, opacity: 0 }}
       animate={{ y: 0, opacity: 1 }}
-      className="sticky top-0 z-50 glass-card-elevated border-b border-border/50"
+      className="sticky top-0 z-50 w-full max-w-full min-w-0 glass-card-elevated border-b border-border/50"
     >
-      <div className="container mx-auto flex h-16 items-center justify-between px-4">
-        {/* Logo */}
-        <Link to="/" className="flex items-center gap-2">
-          <div className="flex h-9 w-9 items-center justify-center rounded-lg gradient-primary">
-            <span className="text-sm font-bold text-primary-foreground">S</span>
-          </div>
-          <span className="font-display text-lg font-bold text-foreground">
-            Samsung Members <span className="gradient-text">DAO</span>
+      <div className="container mx-auto flex h-16 min-w-0 max-w-full items-center gap-2 px-2 sm:px-4">
+        {/* Logo: shrink-0 mark + min-w-0 text so the bar never clips the brand on narrow viewports */}
+        <Link
+          to="/"
+          className="flex min-w-0 flex-1 items-center gap-2 overflow-hidden py-1 no-underline hover:opacity-90"
+        >
+          <img
+            src="/logo.png"
+            alt=""
+            width={36}
+            height={36}
+            className="h-9 w-9 shrink-0 rounded-lg object-cover"
+            decoding="async"
+          />
+          <span className="font-display min-w-0 truncate text-sm font-bold leading-tight text-foreground sm:text-base md:text-lg">
+            <span className="whitespace-nowrap">
+              Samsung Members <span className="gradient-text">DAO</span>
+            </span>
           </span>
         </Link>
 
@@ -140,8 +150,8 @@ export function Navbar() {
           )}
         </div>
 
-        {/* Right side */}
-        <div className="hidden items-center gap-3 md:flex">
+        {/* Right side (desktop) */}
+        <div className="hidden min-w-0 shrink-0 items-center gap-3 md:flex">
           {isAuthenticated && user && (
             <div className="hidden lg:flex items-center gap-2 mr-2">
               <span className={`text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full ${
@@ -192,8 +202,13 @@ export function Navbar() {
           </div>
         </div>
 
-        {/* Mobile toggle */}
-        <button className="md:hidden" onClick={() => setMobileOpen(!mobileOpen)}>
+        {/* Mobile toggle — always visible and never squashed */}
+        <button
+          type="button"
+          className="inline-flex shrink-0 touch-manipulation items-center justify-center rounded-lg p-2 text-foreground hover:bg-muted/80 md:hidden"
+          onClick={() => setMobileOpen(!mobileOpen)}
+          aria-label={mobileOpen ? 'Close menu' : 'Open menu'}
+        >
           {mobileOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
         </button>
       </div>
