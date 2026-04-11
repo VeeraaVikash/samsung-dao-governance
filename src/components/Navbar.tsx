@@ -8,7 +8,7 @@ import { useAuthStore } from '@/stores/useAuthStore';
 import { useWalletStore } from '@/stores/useWalletStore';
 import { toast } from 'sonner';
 
-const navItems = [
+const baseNavItems = [
   { label: 'Home', path: '/' },
   { label: 'Community', path: '/community' },
   {
@@ -31,6 +31,11 @@ export function Navbar() {
   const { isAuthenticated, user, logout } = useAuthStore();
   const { disconnect } = useWalletStore();
 
+  const navItems = baseNavItems.filter((item) => {
+    if ('path' in item && item.path === '/member/dashboard') return isAuthenticated;
+    return true;
+  });
+
   const isActive = (path: string) => location.pathname === path;
 
   useEffect(() => {
@@ -44,8 +49,8 @@ export function Navbar() {
   }, [mobileOpen, location.pathname]);
 
   const handleLogout = () => {
-    logout();
     disconnect();
+    logout();
     import('@/lib/firebase').then(({ auth }) => auth.signOut());
     toast.success('Logged out successfully');
   };
