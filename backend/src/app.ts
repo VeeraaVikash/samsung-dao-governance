@@ -14,6 +14,7 @@ import { ProfileController } from './controllers/profile.controller';
 import { DfnsController } from './controllers/dfns.controller';
 import { CouncilController } from './controllers/council.controller';
 import { MemberController } from './controllers/member.controller';
+import { MemberPortalController } from './controllers/member-portal.controller';
 import { PrismaClient } from '@prisma/client';
 
 const prisma = new PrismaClient();
@@ -49,6 +50,8 @@ app.use('/api/v1/data', dataRouter);
 
 // Proposal Routes
 const proposalRouter = express.Router();
+proposalRouter.get('/', requireAuth, MemberPortalController.listProposals);
+proposalRouter.post('/', requireAuth, MemberPortalController.createProposalDraft);
 proposalRouter.post('/draft', requireAuth, ProposalController.createDraft);
 proposalRouter.post('/:proposalId/publish', requireAuth, ProposalController.publishProposal);
 proposalRouter.post('/:proposalId/signaling-vote', requireAuth, ProposalController.castSignalingVote);
@@ -69,6 +72,18 @@ memberRouter.get('/history', requireAuth, MemberController.getHistory);
 memberRouter.get('/delegations', requireAuth, MemberController.getDelegations);
 app.use('/api/v1/member-dashboard', memberRouter);
 
+// Member portal REST (aligned with governance UI)
+const portalRouter = express.Router();
+portalRouter.post('/vote', requireAuth, MemberPortalController.castElectionVote);
+portalRouter.get('/delegations', requireAuth, MemberController.getDelegations);
+portalRouter.post('/delegate', requireAuth, MemberPortalController.createDelegation);
+portalRouter.delete('/delegations/:id', requireAuth, MemberPortalController.revokeDelegation);
+portalRouter.get('/lottery', requireAuth, MemberPortalController.getLottery);
+portalRouter.post('/lottery/enter', requireAuth, MemberPortalController.enterLottery);
+portalRouter.get('/giveaway', requireAuth, MemberPortalController.getGiveaway);
+portalRouter.post('/giveaway/register', requireAuth, MemberPortalController.registerGiveaway);
+portalRouter.get('/members/search', requireAuth, MemberPortalController.searchMembers);
+app.use('/api/v1', portalRouter);
 
 // DFNS Routes
 const dfnsRouter = express.Router();
@@ -78,6 +93,7 @@ app.use('/api/v1/dfns', dfnsRouter);
 
 // Wallet Routes
 const walletRouter = express.Router();
+walletRouter.post('/connect', requireAuth, WalletController.connect);
 walletRouter.post('/hashpack/connect', requireAuth, WalletController.connectHashPack);
 walletRouter.post('/metamask/connect', requireAuth, WalletController.connectMetaMask);
 walletRouter.get('/me', requireAuth, WalletController.me);
@@ -86,6 +102,7 @@ app.use('/api/v1/wallet', walletRouter);
 // User Routes
 const userRouter = express.Router();
 userRouter.get('/me', requireAuth, UserController.me);
+userRouter.get('/profile', requireAuth, UserController.profile);
 app.use('/api/v1/user', userRouter);
 
 // Profile (aggregated identity + wallet + stats)
