@@ -11,6 +11,9 @@ interface MemberMetrics {
   activeVotes: number;
   proposalsCreated: number;
   spuEarned: number;
+  totalProposals: number;
+  approvedProposals: number;
+  reputationDeltaThisMonth: number;
 }
 
 interface MemberDashboardState {
@@ -38,8 +41,15 @@ export const useMemberDashboardStore = create<MemberDashboardState>((set) => ({
   loadMetrics: async () => {
     try {
       const data = await fetchMemberMetrics();
-      set({ metrics: data });
-    } catch (e: any) {
+      set({
+        metrics: {
+          ...data,
+          totalProposals: data.totalProposals ?? 0,
+          approvedProposals: data.approvedProposals ?? 0,
+          reputationDeltaThisMonth: data.reputationDeltaThisMonth ?? 0,
+        },
+      });
+    } catch (e: unknown) {
       console.error(e);
     }
   },
