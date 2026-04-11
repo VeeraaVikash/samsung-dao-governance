@@ -22,6 +22,16 @@ import Onboard from "./pages/Onboard";
 
 import { DataLoader } from "./components/DataLoader";
 
+// Council pages
+import { CouncilLayout } from "./components/council/CouncilLayout";
+import CouncilDashboard from "./pages/council/CouncilDashboard";
+import ProposalReview from "./pages/council/ProposalReview";
+import RuleBuilder from "./pages/council/RuleBuilder";
+import ElectionSetup from "./pages/council/ElectionSetup";
+import VotingConfigPage from "./pages/council/VotingConfigPage";
+import GiveawaySetup from "./pages/council/GiveawaySetup";
+import LotteryConfig from "./pages/council/LotteryConfig";
+
 const queryClient = new QueryClient();
 
 const App = () => (
@@ -47,9 +57,20 @@ const App = () => (
             <Route path="/auth" element={<RoleSelect />} />
             <Route path="/auth/member" element={<MemberLogin />} />
             <Route path="/auth/council" element={<CouncilLogin />} />
-            {/* Redirect old dashboard login clicks, or if any component used '/login' directly */}
             <Route path="/login" element={<RoleSelect />} />
             <Route path="/onboard" element={<Onboard />} />
+
+            {/* Council Governance System */}
+            <Route path="/council" element={<CouncilLayout />}>
+              <Route index element={<CouncilDashboard />} />
+              <Route path="proposals" element={<ProposalReview />} />
+              <Route path="rules" element={<RuleBuilder />} />
+              <Route path="elections" element={<ElectionSetup />} />
+              <Route path="voting" element={<VotingConfigPage />} />
+              <Route path="giveaways" element={<GiveawaySetup />} />
+              <Route path="lotteries" element={<LotteryConfig />} />
+            </Route>
+
             <Route path="*" element={<NotFound />} />
           </Routes>
         </div>
