@@ -9,10 +9,12 @@ export interface UserProfile {
   name: string;
   nickname: string | null;
   email: string;
-  role: 'MEMBER' | 'COUNCIL';
+  department?: string | null;
+  role: 'MEMBER' | 'COUNCIL' | 'ADMIN';
   assigned_hq: string | null;
   is_wallet_created: boolean;
   is_onboarded?: boolean;
+  created_at?: string;
 }
 
 export interface WalletRecord {
@@ -60,6 +62,9 @@ export const useAuthStore = create<AuthState>((set, get) => ({
   logout: () => {
     localStorage.removeItem('auth_token');
     set({ token: null, user: null, wallets: [], isAuthenticated: false });
+    import('@/stores/useMemberPortalStore').then(({ useMemberPortalStore }) => {
+      useMemberPortalStore.getState().reset();
+    });
   },
 
   updateUser: (updates) => set((state) => ({
