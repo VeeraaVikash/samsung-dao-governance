@@ -29,7 +29,8 @@ export class OracleService {
       console.warn("OracleService: Missing PRIVATE_KEY. Cannot run oracle.");
     }
 
-    this.provider = new ethers.JsonRpcProvider(rpcUrl);
+    // Hedera Hashio RPC rejects batch requests — disable batching entirely
+    this.provider = new ethers.JsonRpcProvider(rpcUrl, undefined, { batchMaxCount: 1 });
     this.wallet = privateKey 
         ? new ethers.Wallet(privateKey, this.provider) 
         : ethers.Wallet.createRandom(this.provider);
@@ -45,16 +46,48 @@ export class OracleService {
 
     this.spuTokenContract = new ethers.Contract(spuAddress, abi, this.wallet);
 
-    // Backend persistent listener mapping explicitly decoupling internal state 
-    // and capturing execution natively parsing out to Prisma DB via actual network txs!
-    this.spuTokenContract.on("OracleMint", async (to: string, amount: bigint, event: any) => {
-        console.log(`[EVM Event] OracleMint verified for ${to}: ${amount.toString()}`);
-        // Log event logic resolving database states if necessary.
-    });
+    // Hedera RPC does NOT support eth_newFilter / eth_subscribe.
+    // Use polling-based event ingestion instead of .on() listeners.
+    this.lastPolledBlock = 0;
+  }
 
-    this.spuTokenContract.on("OracleBurn", async (from: string, amount: bigint, event: any) => {
-        console.log(`[EVM Event] OracleBurn verified for ${from}: ${amount.toString()}`);
-    });
+  private lastPolledBlock: number;
+
+  public async pollOracleEvents() {
+    try {
+      const currentBlock = await this.provider.getBlockNumber();
+      if (this.lastPolledBlock === 0) {
+        // On first run, only look back 50 blocks to avoid massive queries
+        this.lastPolledBlock = Math.max(0, currentBlock - 50);
+      }
+      if (currentBlock <= this.lastPolledBlock) return;
+
+      const mintFilter = this.spuTokenContract.filters.OracleMint();
+      const burnFilter = this.spuTokenContract.filters.OracleBurn();
+
+      const [mintEvents, burnEvents] = await Promise.all([
+        this.spuTokenContract.queryFilter(mintFilter, this.lastPolledBlock + 1, currentBlock),
+        this.spuTokenContract.queryFilter(burnFilter, this.lastPolledBlock + 1, currentBlock),
+      ]);
+
+      for (const ev of mintEvents) {
+        const parsed = this.spuTokenContract.interface.parseLog({ topics: ev.topics as string[], data: ev.data });
+        if (parsed) {
+          console.log(`[EVM Poll] OracleMint: to=${parsed.args[0]}, amount=${parsed.args[1].toString()}`);
+        }
+      }
+
+      for (const ev of burnEvents) {
+        const parsed = this.spuTokenContract.interface.parseLog({ topics: ev.topics as string[], data: ev.data });
+        if (parsed) {
+          console.log(`[EVM Poll] OracleBurn: from=${parsed.args[0]}, amount=${parsed.args[1].toString()}`);
+        }
+      }
+
+      this.lastPolledBlock = currentBlock;
+    } catch (err) {
+      console.warn("Oracle event polling error (non-fatal):", err);
+    }
   }
 
   private async fetchHtsBalanceWithDriftCheck(accountId: string, iterationCheck: boolean): Promise<bigint> {
@@ -158,6 +191,8 @@ export class OracleService {
     } catch (error) {
        console.error("Critical Oracle Loop failure:", error);
     } finally {
+       // Poll for on-chain events at the end of each sync cycle
+       await this.pollOracleEvents();
        this.isSyncing = false; 
     }
   }
